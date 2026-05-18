@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Free Estimate — Lawn Guys Co.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --g900: #1B4332;
+      --g800: #2D6A4F;
+      --g700: #40916C;
+      --g500: #52B788;
+      --g100: #D8F3DC;
+      --g50:  #F0FAF4;
+      --gray: #1F2937;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+    }
+
+    body { font-family: 'Inter', sans-serif; color: var(--gray); background: var(--g50); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--g900); padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: .55rem; text-decoration: none; }
+    .logo svg { width: 34px; height: 34px; }
+    .logo-name { font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: -.01em; }
+    .back-link { color: rgba(255,255,255,.65); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .back-link:hover { color: #fff; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { background: var(--g800); padding: 2.5rem 2rem; text-align: center; }
+    .page-header h1 { font-size: clamp(1.6rem,4vw,2.2rem); font-weight: 800; color: #fff; margin-bottom: .4rem; }
+    .page-header p { color: rgba(255,255,255,.75); font-size: 1rem; }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { max-width: 660px; margin: 2.5rem auto 0; padding: 0 1.5rem; }
+    .progress-steps { display: flex; align-items: center; gap: 0; }
+    .step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+    .step-item:not(:last-child)::after {
+      content: ''; position: absolute; top: 18px; left: calc(50% + 20px);
+      width: calc(100% - 40px); height: 2px;
+      background: var(--border); z-index: 0;
+    }
+    .step-item.done:not(:last-child)::after { background: var(--g500); }
+
+    .step-circle {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 2px solid var(--border); background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; color: var(--muted);
+      position: relative; z-index: 1; transition: all .3s;
+    }
+    .step-item.active .step-circle { border-color: var(--g700); background: var(--g700); color: #fff; }
+    .step-item.done .step-circle { border-color: var(--g500); background: var(--g500); color: #fff; }
+    .step-label { font-size: .75rem; font-weight: 600; color: var(--muted); margin-top: .4rem; text-align: center; }
+    .step-item.active .step-label { color: var(--g800); }
+    .step-item.done .step-label { color: var(--g700); }
+
+    /* ── FORM CARD ── */
+    .form-wrap { max-width: 700px; margin: 2rem auto 4rem; padding: 0 1.5rem; }
+    .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 30px rgba(0,0,0,.09); overflow: hidden; }
+
+    .step-panel { display: none; padding: 2.5rem; }
+    .step-panel.active { display: block; }
+
+    .step-title { font-size: 1.35rem; font-weight: 800; color: var(--gray); margin-bottom: .35rem; }
+    .step-subtitle { font-size: .9rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.5; }
+
+    /* ── SERVICE CARDS ── */
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 1rem; }
+    .service-option { position: relative; }
+    .service-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .service-option label {
+      display: flex; flex-direction: column; gap: .5rem;
+      border: 2px solid var(--border); border-radius: 14px;
+      padding: 1.2rem 1rem; cursor: pointer;
+      transition: all .2s; background: var(--g50);
+    }
+    .service-option label:hover { border-color: var(--g500); background: var(--g100); }
+    .service-option input:checked + label {
+      border-color: var(--g700); background: var(--g50);
+      box-shadow: 0 0 0 3px rgba(64,145,108,.15);
+    }
+    .svc-icon { font-size: 1.6rem; }
+    .svc-name { font-size: .9rem; font-weight: 700; color: var(--gray); line-height: 1.3; }
+    .svc-check {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+      background: #fff; position: absolute; top: .7rem; right: .7rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .service-option input:checked ~ .svc-check { border-color: var(--g700); background: var(--g700); }
+
+    .other-input {
+      margin-top: 1rem;
+    }
+
+    /* ── PILLS (time, urgency) ── */
+    .pill-label { font-size: .88rem; font-weight: 600; color: var(--gray); margin-bottom: .6rem; display: block; }
+    .pills { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
+    .pill-opt { position: relative; }
+    .pill-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .pill-opt label {
+      display: inline-block; padding: .5rem 1.1rem; border-radius: 50px;
+      border: 2px solid var(--border); background: var(--g50);
+      font-size: .88rem; font-weight: 600; color: var(--muted); cursor: pointer;
+      transition: all .2s;
+    }
+    .pill-opt label:hover { border-color: var(--g500); color: var(--g800); }
+    .pill-opt input:checked + label { border-color: var(--g700); background: var(--g700); color: #fff; }
+
+    /* ── FORM FIELDS ── */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .field-row.three { grid-template-columns: 2fr 1fr 1fr; }
+    .field-row.single { grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: 1rem; }
+    .field label { font-size: .85rem; font-weight: 600; color: var(--gray); }
+    .field label span { color: #EF4444; }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: .7rem 1rem;
+      border: 2px solid var(--border); border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: .95rem; color: var(--gray);
+      background: var(--g50); outline: none; transition: border .2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--g700); background: #fff; }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .field input[type="date"] { cursor: pointer; }
+
+    /* ── NAV BUTTONS ── */
+    .form-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 2.5rem; border-top: 1px solid var(--border);
+      background: #FAFAFA;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .75rem 1.8rem; border-radius: 50px;
+      font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 700;
+      cursor: pointer; border: none; transition: all .2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--g800); color: #fff; }
+    .btn-primary:hover { background: var(--g900); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; color: var(--muted); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--g700); color: var(--g800); }
+    .btn-submit { background: var(--g800); color: #fff; font-size: 1rem; padding: .85rem 2.2rem; }
+    .btn-submit:hover { background: var(--g900); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+
+    .error-msg { font-size: .82rem; color: #EF4444; margin-top: .5rem; display: none; }
+
+    /* ── SUCCESS ── */
+    #success { display: none; padding: 4rem 2.5rem; text-align: center; }
+    .success-icon {
+      width: 80px; height: 80px; background: var(--g100); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    #success h2 { font-size: 1.8rem; font-weight: 800; color: var(--gray); margin-bottom: .6rem; }
+    #success p { color: var(--muted); font-size: 1rem; line-height: 1.65; max-width: 420px; margin: 0 auto 2rem; }
+    .success-details {
+      background: var(--g50); border: 1px solid var(--g100); border-radius: 14px;
+      padding: 1.25rem 1.5rem; text-align: left; max-width: 420px; margin: 0 auto 2rem;
+    }
+    .success-details p { margin-bottom: .4rem; color: var(--gray); font-size: .92rem; }
+    .success-details p strong { color: var(--g800); }
+
+    @media (max-width: 540px) {
+      .service-grid { grid-template-columns: 1fr 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+      .field-row.three { grid-template-columns: 1fr; }
+      .step-panel { padding: 1.5rem; }
+      .form-nav { padding: 1.2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="38" rx="11" fill="rgba(255,255,255,0.18)"/>
+      <path d="M19 7C15 7 10 12 10 18c0 3.5 1.8 6.3 5 8 0 2 .5 3.5 4 4 3.5-.5 4-2 4-4 3.2-1.7 5-4.5 5-8C28 12 23 7 19 7z" fill="white"/>
+      <path d="M19 14v12" stroke="#2D6A4F" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M19 17l-4-3" stroke="#2D6A4F" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M19 20.5l4-3" stroke="#2D6A4F" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-name">Lawn Guys Co.</span>
+  </a>
+  <a href="index.html" class="back-link">← Back to Home</a>
+</header>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Get Your Free Estimate</h1>
+  <p>Takes less than 2 minutes — no commitment required.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-steps" id="progressSteps">
+    <div class="step-item active" data-step="1">
+      <div class="step-circle">1</div>
+      <span class="step-label">Services</span>
+    </div>
+    <div class="step-item" data-step="2">
+      <div class="step-circle">2</div>
+      <span class="step-label">Scheduling</span>
+    </div>
+    <div class="step-item" data-step="3">
+      <div class="step-circle">3</div>
+      <span class="step-label">Your Info</span>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrap">
+  <div class="form-card">
+
+    <!-- ── STEP 1: Services ── -->
+    <div id="step1" class="step-panel active">
+      <div style="padding: 2.5rem 2.5rem 0">
+        <p class="step-title">What services do you need?</p>
+        <p class="step-subtitle">Select everything that applies — you can choose more than one.</p>
+
+        <div class="service-grid">
+          <div class="service-option">
+            <input type="checkbox" id="svc1" name="services" value="Weed Pulling">
+            <label for="svc1">
+              <span class="svc-icon">🍀</span>
+              <span class="svc-name">Weed Pulling</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="checkbox" id="svc2" name="services" value="Lawn Mowing">
+            <label for="svc2">
+              <span class="svc-icon">🏡</span>
+              <span class="svc-name">Lawn Mowing</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="checkbox" id="svc3" name="services" value="Mulching">
+            <label for="svc3">
+              <span class="svc-icon">🌱</span>
+              <span class="svc-name">Mulching</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="checkbox" id="svc4" name="services" value="Leaf & Debris Cleanup">
+            <label for="svc4">
+              <span class="svc-icon">🍃</span>
+              <span class="svc-name">Leaf &amp; Debris Cleanup</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="checkbox" id="svc5" name="services" value="Moving Furniture">
+            <label for="svc5">
+              <span class="svc-icon">🛏️</span>
+              <span class="svc-name">Moving Furniture</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="checkbox" id="svc6" name="services" value="Other">
+            <label for="svc6">
+              <span class="svc-icon">✏️</span>
+              <span class="svc-name">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="other-input field" id="otherField" style="display:none; margin-top:1rem;">
+          <label for="otherDesc">What do you need done?</label>
+          <textarea id="otherDesc" placeholder="Describe the job and we'll include it in your estimate..."></textarea>
+        </div>
+
+        <p class="error-msg" id="svcError">Please select at least one service to continue.</p>
+      </div>
+    </div>
+    <div id="nav1" class="form-nav" style="justify-content: flex-end;">
+      <button class="btn btn-primary" onclick="goTo(2)">
+        Next — Scheduling
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- ── STEP 2: Scheduling ── -->
+    <div id="step2" class="step-panel">
+      <div style="padding: 2.5rem 2.5rem 0">
+        <p class="step-title">When works best for you?</p>
+        <p class="step-subtitle">We'll do our best to accommodate your schedule.</p>
+
+        <div class="field">
+          <label for="prefDate">Preferred date <span>*</span></label>
+          <input type="date" id="prefDate" />
+        </div>
+
+        <span class="pill-label">Preferred time of day</span>
+        <div class="pills">
+          <div class="pill-opt"><input type="radio" name="timeOfDay" id="t1" value="Morning (7am–12pm)"><label for="t1">Morning (7am–12pm)</label></div>
+          <div class="pill-opt"><input type="radio" name="timeOfDay" id="t2" value="Afternoon (12pm–5pm)"><label for="t2">Afternoon (12pm–5pm)</label></div>
+          <div class="pill-opt"><input type="radio" name="timeOfDay" id="t3" value="Evening (5pm–7pm)"><label for="t3">Evening (5pm–7pm)</label></div>
+          <div class="pill-opt"><input type="radio" name="timeOfDay" id="t4" value="Flexible"><label for="t4">Flexible</label></div>
+        </div>
+
+        <span class="pill-label">How soon do you need it?</span>
+        <div class="pills">
+          <div class="pill-opt"><input type="radio" name="urgency" id="u1" value="As soon as possible"><label for="u1">ASAP</label></div>
+          <div class="pill-opt"><input type="radio" name="urgency" id="u2" value="Within 1 week"><label for="u2">Within 1 week</label></div>
+          <div class="pill-opt"><input type="radio" name="urgency" id="u3" value="Within 2 weeks"><label for="u3">Within 2 weeks</label></div>
+          <div class="pill-opt"><input type="radio" name="urgency" id="u4" value="No rush"><label for="u4">No rush</label></div>
+        </div>
+
+        <div class="field">
+          <label for="notes">Any additional details? <small style="font-weight:400;color:var(--muted)">(optional)</small></label>
+          <textarea id="notes" placeholder="Yard size, gate code, specific concerns, etc."></textarea>
+        </div>
+
+        <p class="error-msg" id="schedError">Please pick a preferred date to continue.</p>
+      </div>
+    </div>
+    <div id="nav2" class="form-nav" style="display:none">
+      <button class="btn btn-secondary" onclick="goTo(1)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <button class="btn btn-primary" onclick="goTo(3)">
+        Next — Your Info
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- ── STEP 3: Contact Info ── -->
+    <div id="step3" class="step-panel">
+      <div style="padding: 2.5rem 2.5rem 0">
+        <p class="step-title">Your contact information</p>
+        <p class="step-subtitle">We'll use this to send your free estimate and confirm your appointment.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name <span>*</span></label>
+            <input type="text" id="firstName" placeholder="Jane" autocomplete="given-name" />
+          </div>
+          <div class="field">
+            <label for="lastName">Last name <span>*</span></label>
+            <input type="text" id="lastName" placeholder="Smith" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="address">Street address <span>*</span></label>
+          <input type="text" id="address" placeholder="123 Maple Street" autocomplete="street-address" />
+        </div>
+
+        <div class="field-row three">
+          <div class="field">
+            <label for="city">City <span>*</span></label>
+            <input type="text" id="city" placeholder="Springfield" autocomplete="address-level2" />
+          </div>
+          <div class="field">
+            <label for="state">State <span>*</span></label>
+            <input type="text" id="state" placeholder="IL" maxlength="2" autocomplete="address-level1" />
+          </div>
+          <div class="field">
+            <label for="zip">Zip <span>*</span></label>
+            <input type="text" id="zip" placeholder="62701" maxlength="10" autocomplete="postal-code" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="phone">Phone number <span>*</span></label>
+            <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="email">Email address <span>*</span></label>
+            <input type="email" id="email" placeholder="jane@example.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="hearAbout">How did you hear about us? <small style="font-weight:400;color:var(--muted)">(optional)</small></label>
+          <select id="hearAbout">
+            <option value="">— Select one —</option>
+            <option>Google Search</option>
+            <option>Facebook / Instagram</option>
+            <option>Neighbor or Friend</option>
+            <option>Door Hanger / Flyer</option>
+            <option>Nextdoor</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <p class="error-msg" id="contactError">Please fill in all required fields.</p>
+      </div>
+    </div>
+    <div id="nav3" class="form-nav" style="display:none">
+      <button class="btn btn-secondary" onclick="goTo(2)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <button class="btn btn-submit btn-primary" onclick="submitForm()">
+        Submit &amp; Get My Free Estimate
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      </button>
+    </div>
+
+    <!-- ── SUCCESS ── -->
+    <div id="success">
+      <div class="success-icon">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#2D6A4F" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2>Request Received!</h2>
+      <p>Thanks for reaching out. We'll review your request and get back to you with a <strong>free estimate</strong> within 24 hours.</p>
+
+      <div class="success-details">
+        <p><strong>What happens next:</strong></p>
+        <p>✅ We'll review your service request</p>
+        <p>✅ We'll contact you to confirm your appointment</p>
+        <p>✅ You'll receive your free estimate — no pressure, no obligation</p>
+      </div>
+
+      <a href="index.html" class="btn btn-primary" style="margin: 0 auto; display:inline-flex;">← Back to Home</a>
+    </div>
+
+  </div><!-- /form-card -->
+</div><!-- /form-wrap -->
+
+<script>
+  let currentStep = 1;
+
+  // Show/hide "Other" textarea
+  document.getElementById('svc6').addEventListener('change', function() {
+    document.getElementById('otherField').style.display = this.checked ? 'flex' : 'none';
+  });
+
+  function goTo(step) {
+    if (step > currentStep && !validate(currentStep)) return;
+
+    const panels = [1, 2, 3];
+    panels.forEach(s => {
+      document.getElementById('step' + s).classList.toggle('active', s === step);
+      const nav = document.getElementById('nav' + s);
+      nav.style.display = s === step ? 'flex' : 'none';
+    });
+
+    // Progress indicator
+    document.querySelectorAll('.step-item').forEach(el => {
+      const s = parseInt(el.dataset.step);
+      el.classList.toggle('active', s === step);
+      el.classList.toggle('done', s < step);
+    });
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validate(step) {
+    if (step === 1) {
+      const checked = document.querySelectorAll('input[name="services"]:checked');
+      const err = document.getElementById('svcError');
+      if (checked.length === 0) { err.style.display = 'block'; return false; }
+      err.style.display = 'none';
+      return true;
+    }
+    if (step === 2) {
+      const date = document.getElementById('prefDate').value;
+      const err = document.getElementById('schedError');
+      if (!date) { err.style.display = 'block'; return false; }
+      err.style.display = 'none';
+      return true;
+    }
+    if (step === 3) {
+      const required = ['firstName', 'lastName', 'address', 'city', 'state', 'zip', 'phone', 'email'];
+      const empty = required.some(id => !document.getElementById(id).value.trim());
+      const err = document.getElementById('contactError');
+      if (empty) { err.style.display = 'block'; return false; }
+      err.style.display = 'none';
+      return true;
+    }
+    return true;
+  }
+
+  async function submitForm() {
+    if (!validate(3)) return;
+
+    const submitBtn = document.querySelector('.btn-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    const services = [...document.querySelectorAll('input[name="services"]:checked')]
+      .map(el => el.value).join(', ');
+    const otherDesc = document.getElementById('otherDesc').value;
+    const timeOfDay = document.querySelector('input[name="timeOfDay"]:checked')?.value || 'Not specified';
+    const urgency   = document.querySelector('input[name="urgency"]:checked')?.value  || 'Not specified';
+
+    const payload = {
+      Services:         services + (otherDesc ? ` — ${otherDesc}` : ''),
+      'Preferred Date': document.getElementById('prefDate').value,
+      'Time of Day':    timeOfDay,
+      Urgency:          urgency,
+      Notes:            document.getElementById('notes').value || '—',
+      Name:             `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+      Address:          `${document.getElementById('address').value}, ${document.getElementById('city').value}, ${document.getElementById('state').value} ${document.getElementById('zip').value}`,
+      Phone:            document.getElementById('phone').value,
+      Email:            document.getElementById('email').value,
+      'Heard About Us': document.getElementById('hearAbout').value || '—',
+    };
+
+    try {
+      const res = await fetch('https://formspree.io/f/xjglnqpg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Network error');
+
+      // Show success
+      [1, 2, 3].forEach(s => {
+        document.getElementById('step' + s).classList.remove('active');
+        document.getElementById('nav' + s).style.display = 'none';
+      });
+      document.querySelectorAll('.step-item').forEach(el => {
+        el.classList.remove('active');
+        el.classList.add('done');
+      });
+      document.getElementById('success').style.display = 'block';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Submit &amp; Get My Free Estimate <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+      document.getElementById('contactError').textContent = 'Something went wrong. Please try again.';
+      document.getElementById('contactError').style.display = 'block';
+    }
+  }
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('prefDate').min = today;
+
+  // Phone formatting
+  document.getElementById('phone').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '').slice(0, 10);
+    if (v.length >= 6) v = '(' + v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6);
+    else if (v.length >= 3) v = '(' + v.slice(0,3) + ') ' + v.slice(3);
+    this.value = v;
+  });
+</script>
+</body>
+</html>
