@@ -519,11 +519,35 @@
     /* ── REVIEWS ── */
     .reviews-section { padding: 6rem 2rem; background: #f5fff8; position: relative; overflow: hidden; }
     .reviews-inner { max-width: 1060px; margin: 0 auto; position: relative; z-index: 1; }
-    .reviews-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.4rem; margin-top: 2.5rem;
+    .reviews-carousel { display: flex; align-items: center; gap: 0.75rem; margin-top: 2.5rem; }
+    .reviews-track-wrap { overflow: hidden; flex: 1; }
+    .reviews-track {
+      display: flex;
+      gap: 1.4rem;
+      transition: transform 0.42s cubic-bezier(.4,0,.2,1);
     }
+    .reviews-track .review-card {
+      flex: 0 0 calc(33.333% - 0.94rem);
+      min-width: 0;
+    }
+    @media (max-width: 700px) {
+      .reviews-carousel { gap: 0.4rem; }
+      .reviews-track .review-card { flex: 0 0 100%; }
+    }
+    .carousel-btn {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--g500);
+      background: #fff;
+      color: var(--g800);
+      font-size: 1.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, opacity .2s;
+    }
+    .carousel-btn:hover:not(:disabled) { background: var(--g100); }
+    .carousel-btn:disabled { opacity: 0.25; cursor: default; }
     .review-card {
       background: #fff; border: 1.5px solid #c0e8c0;
       border-radius: 18px; padding: 1.5rem 1.6rem;
@@ -1020,7 +1044,13 @@
     <p class="section-tag reveal">Reviews</p>
     <h2 class="section-h reveal reveal-delay-1">What Our Customers Say</h2>
 
-    <div class="reviews-grid" id="reviewsGrid"></div>
+    <div class="reviews-carousel" id="reviewsCarousel">
+      <button class="carousel-btn" id="carouselPrev" aria-label="Previous reviews" disabled>&#8249;</button>
+      <div class="reviews-track-wrap">
+        <div class="reviews-track" id="reviewsGrid"></div>
+      </div>
+      <button class="carousel-btn" id="carouselNext" aria-label="Next reviews" disabled>&#8250;</button>
+    </div>
 
     <div class="reviews-empty" id="reviewsEmpty" style="display:none">
       No reviews yet — be the first to share your experience!
@@ -1211,8 +1241,12 @@
     const formWrap   = document.getElementById('reviewFormWrap');
     const form       = document.getElementById('reviewForm');
     const msgEl      = document.getElementById('reviewMsg');
+    const prevBtn    = document.getElementById('carouselPrev');
+    const nextBtn    = document.getElementById('carouselNext');
     const starBtns   = document.querySelectorAll('.star-btn');
     let selectedRating = 0;
+    let allReviews   = [];
+    let currentIdx   = 0;
 
     function esc(s) {
       return String(s)
@@ -1252,25 +1286,44 @@
       return card;
     }
 
+    function getVisible() { return window.innerWidth <= 700 ? 1 : 3; }
+
+    function getCardStep() {
+      const cards = grid.children;
+      if (!cards.length) return 0;
+      const gap = parseFloat(getComputedStyle(grid).gap) || 22;
+      return cards[0].offsetWidth + gap;
+    }
+
+    function updateCarousel() {
+      const maxIdx = Math.max(0, allReviews.length - getVisible());
+      currentIdx = Math.min(currentIdx, maxIdx);
+      grid.style.transform = `translateX(-${currentIdx * getCardStep()}px)`;
+      prevBtn.disabled = currentIdx === 0;
+      nextBtn.disabled = currentIdx >= maxIdx;
+    }
+
     async function loadReviews() {
       try {
         const res = await fetch('/api/reviews');
-        const reviews = await res.json();
+        allReviews = await res.json();
         grid.innerHTML = '';
-        if (!Array.isArray(reviews) || reviews.length === 0) {
+        if (!Array.isArray(allReviews) || allReviews.length === 0) {
           empty.style.display = 'block';
         } else {
           empty.style.display = 'none';
-          reviews.forEach(r => {
-            const card = renderCard(r);
-            grid.appendChild(card);
-            observer.observe(card);
-          });
+          allReviews.forEach(r => grid.appendChild(renderCard(r)));
+          currentIdx = 0;
+          updateCarousel();
         }
       } catch {
         empty.style.display = 'block';
       }
     }
+
+    prevBtn.addEventListener('click', () => { currentIdx--; updateCarousel(); });
+    nextBtn.addEventListener('click', () => { currentIdx++; updateCarousel(); });
+    window.addEventListener('resize', updateCarousel);
 
     // Toggle form
     toggleBtn.addEventListener('click', () => {
