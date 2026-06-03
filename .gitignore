@@ -1,1 +1,17 @@
 alexco-site.zip
+node_modules/
+uploads/
+.tmp/
+.claude/
+*.jpg
+*.png
+*.jpeg
+colorpallate.png
+LawnGuys.png
+image.png
+"CLAUDE (1).md"
+components/
+lib/
+tools/
+flyer.html
+flyer2.html

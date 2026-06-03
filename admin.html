@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Lawn Guys Co.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --g900: #293F14; --g800: #386C0B; --g700: #38A700;
+      --g500: #31D843; --g300: #3EFF8B; --g100: #d4ffe5;
+      --gray: #1F2937; --muted: #6B7280;
+    }
+    body { font-family: 'Inter', sans-serif; color: var(--gray); background: #f5fff8; min-height: 100vh; }
+
+    header {
+      background: var(--g900); color: #fff;
+      padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1rem;
+    }
+    header h1 { font-size: 1.2rem; font-weight: 800; }
+    header span { font-size: .82rem; opacity: .55; }
+    header a {
+      margin-left: auto; color: var(--g300); font-size: .9rem;
+      font-weight: 600; text-decoration: none;
+    }
+    header a:hover { color: #fff; }
+
+    .login-wrap {
+      max-width: 400px; margin: 5rem auto; background: #fff;
+      border: 1.5px solid #c0e8c0; border-radius: 20px; padding: 2.5rem;
+    }
+    .login-wrap h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; }
+    .login-wrap input {
+      width: 100%; padding: .75rem 1rem; border-radius: 10px;
+      border: 1.5px solid #c8e8c8; font-family: inherit; font-size: 1rem;
+      outline: none; margin-bottom: 1rem; transition: border-color .2s;
+    }
+    .login-wrap input:focus { border-color: var(--g500); }
+    .login-wrap button {
+      width: 100%; padding: .85rem; background: var(--g800); color: #fff;
+      border: none; border-radius: 50px; font-family: inherit;
+      font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .2s;
+    }
+    .login-wrap button:hover { background: var(--g900); }
+    .login-err { color: #dc2626; font-size: .9rem; margin-top: .5rem; }
+
+    .admin-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .admin-header h2 { font-size: 1.5rem; font-weight: 800; }
+    .admin-count { font-size: .9rem; color: var(--muted); }
+    .logout-btn {
+      background: none; border: 1.5px solid #c0e8c0; padding: .5rem 1.2rem;
+      border-radius: 50px; font-family: inherit; font-size: .88rem; font-weight: 600;
+      cursor: pointer; color: var(--gray); transition: all .2s;
+    }
+    .logout-btn:hover { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+
+    .reviews-list { display: flex; flex-direction: column; gap: 1.2rem; }
+    .admin-card {
+      background: #fff; border: 1.5px solid #c0e8c0;
+      border-radius: 16px; padding: 1.4rem 1.6rem;
+      display: flex; gap: 1.2rem; align-items: flex-start;
+    }
+    .admin-card-body { flex: 1; min-width: 0; }
+    .admin-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .5rem; }
+    .ac-name { font-weight: 700; font-size: 1rem; }
+    .ac-stars { display: flex; gap: 1px; margin-top: .15rem; }
+    .ac-star-f { color: #f59e0b; }
+    .ac-star-e { color: #d1d5db; }
+    .ac-meta { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-bottom: .6rem; }
+    .ac-badge {
+      background: var(--g100); color: var(--g800);
+      font-size: .72rem; font-weight: 700; padding: .22rem .65rem; border-radius: 50px;
+    }
+    .ac-date { font-size: .76rem; color: var(--muted); }
+    .ac-desc { font-size: .93rem; color: var(--gray); line-height: 1.7; }
+    .ac-photo {
+      width: 110px; height: 90px; object-fit: cover; border-radius: 10px;
+      flex-shrink: 0; cursor: pointer; transition: opacity .2s;
+    }
+    .ac-photo:hover { opacity: .85; }
+    .delete-btn {
+      background: none; border: 1.5px solid #fca5a5;
+      color: #dc2626; padding: .45rem 1rem; border-radius: 50px;
+      font-family: inherit; font-size: .82rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; white-space: nowrap; flex-shrink: 0;
+    }
+    .delete-btn:hover { background: #fef2f2; }
+    .delete-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .admin-empty {
+      text-align: center; padding: 4rem; color: var(--muted); font-size: 1.05rem;
+    }
+
+    /* Lightbox */
+    .photo-lb {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.88); align-items: center; justify-content: center; padding: 1rem;
+    }
+    .photo-lb.open { display: flex; }
+    .lb-img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+    .lb-close {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      width: 44px; height: 44px; border-radius: 50%; font-size: 1.4rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .lb-close:hover { background: rgba(255,255,255,.28); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Lawn Guys Co.</h1>
+  <span>Admin Panel</span>
+  <a href="index.html">← Back to site</a>
+</header>
+
+<!-- Login -->
+<div class="login-wrap" id="loginWrap">
+  <h2>Admin Login</h2>
+  <input type="password" id="pwInput" placeholder="Enter admin password" autocomplete="current-password">
+  <button id="loginBtn">Sign In</button>
+  <p class="login-err" id="loginErr" style="display:none">Incorrect password. Try again.</p>
+</div>
+
+<!-- Admin panel (hidden until logged in) -->
+<div class="admin-wrap" id="adminWrap" style="display:none">
+  <div class="admin-header">
+    <div>
+      <h2>Customer Reviews</h2>
+      <p class="admin-count" id="adminCount"></p>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Log Out</button>
+  </div>
+  <div class="reviews-list" id="adminList"></div>
+  <div class="admin-empty" id="adminEmpty" style="display:none">No reviews yet.</div>
+</div>
+
+<!-- Lightbox -->
+<div class="photo-lb" id="photoLb">
+  <button class="lb-close" id="lbClose">&#x2715;</button>
+  <img class="lb-img" id="lbImg" src="" alt="Review photo">
+</div>
+
+<script>
+  const SESSION_KEY = 'lg_admin_pw';
+
+  const loginWrap  = document.getElementById('loginWrap');
+  const adminWrap  = document.getElementById('adminWrap');
+  const pwInput    = document.getElementById('pwInput');
+  const loginBtn   = document.getElementById('loginBtn');
+  const loginErr   = document.getElementById('loginErr');
+  const logoutBtn  = document.getElementById('logoutBtn');
+  const adminList  = document.getElementById('adminList');
+  const adminEmpty = document.getElementById('adminEmpty');
+  const adminCount = document.getElementById('adminCount');
+
+  function getPassword() { return sessionStorage.getItem(SESSION_KEY) || ''; }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function stars(n) {
+    return Array.from({length:5}, (_,i) =>
+      `<span class="${i < n ? 'ac-star-f' : 'ac-star-e'}">★</span>`
+    ).join('');
+  }
+
+  function fmtDate(iso) {
+    return new Date(iso).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  }
+
+  function openLb(src) {
+    document.getElementById('lbImg').src = src;
+    document.getElementById('photoLb').classList.add('open');
+  }
+
+  document.getElementById('photoLb').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
+  document.getElementById('lbClose').addEventListener('click', () => {
+    document.getElementById('photoLb').classList.remove('open');
+  });
+
+  async function loadAdminReviews() {
+    adminList.innerHTML = '';
+    adminEmpty.style.display = 'none';
+    try {
+      const res = await fetch('/api/reviews');
+      const reviews = await res.json();
+      if (!Array.isArray(reviews) || reviews.length === 0) {
+        adminEmpty.style.display = 'block';
+        adminCount.textContent = '0 reviews';
+        return;
+      }
+      adminCount.textContent = `${reviews.length} review${reviews.length !== 1 ? 's' : ''}`;
+      reviews.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'admin-card';
+        card.innerHTML = `
+          ${r.photo ? `<img class="ac-photo" src="${esc(r.photo)}" alt="photo">` : ''}
+          <div class="admin-card-body">
+            <div class="admin-card-top">
+              <div>
+                <div class="ac-name">${esc(r.name)}</div>
+                <div class="ac-stars">${stars(r.rating)}</div>
+              </div>
+              <button class="delete-btn" data-id="${esc(r.id)}">Remove</button>
+            </div>
+            <div class="ac-meta">
+              <span class="ac-badge">${esc(r.jobType)}</span>
+              <span class="ac-date">${fmtDate(r.date)}</span>
+            </div>
+            <p class="ac-desc">${esc(r.description)}</p>
+          </div>
+        `;
+        if (r.photo) {
+          card.querySelector('.ac-photo').addEventListener('click', () => openLb(r.photo));
+        }
+        card.querySelector('.delete-btn').addEventListener('click', () => deleteReview(r.id, card));
+        adminList.appendChild(card);
+      });
+    } catch {
+      adminEmpty.textContent = 'Could not load reviews.';
+      adminEmpty.style.display = 'block';
+    }
+  }
+
+  async function deleteReview(id, card) {
+    if (!confirm('Remove this review? This cannot be undone.')) return;
+    const btn = card.querySelector('.delete-btn');
+    btn.disabled = true;
+    btn.textContent = 'Removing…';
+    try {
+      const res = await fetch(`/api/reviews/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': getPassword() }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete.');
+      await loadAdminReviews();
+    } catch (err) {
+      alert(err.message);
+      btn.disabled = false;
+      btn.textContent = 'Remove';
+    }
+  }
+
+  async function attemptLogin() {
+    const pw = pwInput.value.trim();
+    if (!pw) return;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Checking…';
+    // Verify by attempting a delete of a non-existent ID — server will 401 vs 404
+    try {
+      const res = await fetch('/api/reviews/__verify__', {
+        method: 'DELETE',
+        headers: { 'x-admin-password': pw }
+      });
+      if (res.status === 401) {
+        loginErr.style.display = 'block';
+      } else {
+        sessionStorage.setItem(SESSION_KEY, pw);
+        loginErr.style.display = 'none';
+        loginWrap.style.display = 'none';
+        adminWrap.style.display = 'block';
+        await loadAdminReviews();
+      }
+    } catch {
+      loginErr.style.display = 'block';
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Sign In';
+    }
+  }
+
+  loginBtn.addEventListener('click', attemptLogin);
+  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    adminWrap.style.display = 'none';
+    loginWrap.style.display = 'block';
+    pwInput.value = '';
+  });
+
+  // Auto-login if password already in session
+  if (getPassword()) {
+    (async () => {
+      const res = await fetch('/api/reviews/__verify__', {
+        method: 'DELETE',
+        headers: { 'x-admin-password': getPassword() }
+      }).catch(() => ({ status: 401 }));
+      if (res.status !== 401) {
+        loginWrap.style.display = 'none';
+        adminWrap.style.display = 'block';
+        await loadAdminReviews();
+      } else {
+        sessionStorage.removeItem(SESSION_KEY);
+      }
+    })();
+  }
+</script>
+</body>
+</html>
