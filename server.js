@@ -54,6 +54,7 @@ function saveReviews(reviews) {
 }
 
 app.get('/api/reviews', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.json(loadReviews());
 });
 
