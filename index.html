@@ -1248,8 +1248,11 @@
 
     async function loadReviews() {
       try {
+        console.log('[reviews] fetching…');
         const res = await fetch('/api/reviews');
+        console.log('[reviews] status:', res.status);
         const reviews = await res.json();
+        console.log('[reviews] data:', reviews);
         grid.innerHTML = '';
         if (!Array.isArray(reviews) || reviews.length === 0) {
           empty.style.display = 'block';
@@ -1261,7 +1264,9 @@
             observer.observe(card);
           });
         }
-      } catch {
+      } catch (err) {
+        console.error('[reviews] ERROR:', err);
+        empty.textContent = 'Debug: ' + err.message;
         empty.style.display = 'block';
       }
     }
