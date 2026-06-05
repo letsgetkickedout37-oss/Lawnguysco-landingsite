@@ -15,7 +15,5 @@
     "express": "^5.2.1",
     "multer": "^2.1.1"
   },
-  "devDependencies": {
-    "puppeteer": "^25.0.2"
-  }
+  "devDependencies": {}
 }
