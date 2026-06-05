@@ -47,12 +47,12 @@
     .nav-btn:hover { background: var(--g100); transform: translateY(-1px); }
 
     /* ── HERO ── */
-    .hero-scroll-zone { height: 220vh; position: relative; }
+    .hero-scroll-zone { height: 220svh; height: 220vh; position: relative; }
     .hero {
-      height: 100vh;
-      position: sticky; top: 0;
+      height: 100svh; height: 100vh;
+      position: -webkit-sticky; position: sticky; top: 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      overflow: hidden;
+      overflow: clip;
       padding: 7rem 2rem 8rem;
       text-align: center;
     }
@@ -75,7 +75,7 @@
     }
     .hero-mower {
       position: absolute; bottom: 12%; z-index: 3;
-      width: 500px; transform: translateX(-50%) scaleX(-1);
+      width: min(500px, 85vw); transform: translateX(-50%) scaleX(-1);
       pointer-events: none;
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.7));
     }
@@ -1243,7 +1243,8 @@
     if (!zone || !afterBg) return;
     let ticking = false;
     function update() {
-      const scrollable = zone.offsetHeight - window.innerHeight;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const scrollable = zone.offsetHeight - vh;
       const progress = Math.max(0, Math.min(1, window.scrollY / scrollable));
       // Reveal after-image left to right (mower faces left, flipped with scaleX(-1))
       afterBg.style.clipPath = `inset(0 ${((1 - progress) * 100).toFixed(2)}% 0 0)`;
