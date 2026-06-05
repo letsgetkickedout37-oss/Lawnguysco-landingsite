@@ -47,38 +47,68 @@
     .nav-btn:hover { background: var(--g100); transform: translateY(-1px); }
 
     /* ── HERO ── */
+    .hero-scroll-zone { height: 220vh; position: relative; }
     .hero {
-      min-height: 100vh;
-      background: linear-gradient(rgba(41,63,20,0.76), rgba(41,63,20,0.88)), url('./grass.webp');
-      background-size: cover;
-      background-position: center 50%;
-      will-change: background-position;
+      height: 100vh;
+      position: sticky; top: 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
+      overflow: hidden;
       padding: 7rem 2rem 8rem;
       text-align: center;
     }
 
+    .hero-bg-layer {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+    }
+    .hero-bg-before { background-image: url('./Before.png'); z-index: 0; }
+    .hero-bg-after  {
+      background-image: url('./After.png'); z-index: 1;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    /* lawnmower */
+    .hero-cut-line {
+      position: absolute; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(transparent 5%, rgba(255,255,255,.55) 30%, rgba(255,255,255,.55) 70%, transparent 95%);
+      z-index: 3; transform: translateX(-50%); pointer-events: none;
+    }
+    .hero-mower {
+      position: absolute; bottom: 12%; z-index: 3;
+      width: 500px; transform: translateX(-50%) scaleX(-1);
+      pointer-events: none;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,.7));
+    }
+    @keyframes mow-spin { to { transform: rotate(360deg); } }
+    .hero-mower .mow-wheel {
+      transform-box: fill-box; transform-origin: center;
+      animation: mow-spin 0.45s linear infinite;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(rgba(41,63,20,0.72), rgba(41,63,20,0.85));
+    }
+
     /* decorative circles */
     .hero::before {
-      content: ''; position: absolute;
+      content: ''; position: absolute; z-index: 3;
       width: 700px; height: 700px; border-radius: 50%;
       border: 130px solid rgba(255,255,255,.04);
       top: -220px; right: -180px; pointer-events: none;
     }
     .hero::after {
-      content: ''; position: absolute;
+      content: ''; position: absolute; z-index: 3;
       width: 500px; height: 500px; border-radius: 50%;
       border: 100px solid rgba(255,255,255,.04);
       bottom: -160px; left: -120px; pointer-events: none;
     }
 
-    .hero-inner { position: relative; z-index: 1; max-width: 820px; }
+    .hero-inner { position: relative; z-index: 4; max-width: 820px; }
 
     /* hero bottom fade */
     .section-wave {
       position: absolute; bottom: 0; left: 0; right: 0;
-      height: 160px; z-index: 4; pointer-events: none;
+      height: 160px; z-index: 5; pointer-events: none;
       background: linear-gradient(to bottom, transparent 0%, #efffed 100%);
     }
     /* standalone between-section wave */
@@ -680,7 +710,62 @@
 </nav>
 
 <!-- HERO -->
+<div class="hero-scroll-zone" id="heroScrollZone">
 <section class="hero">
+  <div class="hero-bg-layer hero-bg-before"></div>
+  <div class="hero-bg-layer hero-bg-after" id="heroAfterBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-cut-line" id="heroCutLine"></div>
+  <svg class="hero-mower" id="heroMower" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 72" style="opacity:0">
+    <!-- deck -->
+    <rect x="8" y="28" width="58" height="16" rx="5" fill="#1e5c05"/>
+    <rect x="8" y="40" width="58" height="5" rx="2.5" fill="#133d03"/>
+    <!-- engine -->
+    <rect x="22" y="15" width="26" height="15" rx="4" fill="#c01a1a"/>
+    <!-- exhaust -->
+    <rect x="42" y="6" width="7" height="13" rx="3" fill="#555"/>
+    <!-- handle -->
+    <path d="M63 32 L82 6" stroke="#7a4020" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <line x1="78" y1="6" x2="90" y2="6" stroke="#7a4020" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- rear wheel -->
+    <circle cx="24" cy="52" r="13" fill="#1a1a1a"/>
+    <g class="mow-wheel">
+      <circle cx="24" cy="52" r="6" fill="#3a3a3a"/>
+      <line x1="24" y1="39" x2="24" y2="65" stroke="#666" stroke-width="2.5"/>
+      <line x1="11" y1="52" x2="37" y2="52" stroke="#666" stroke-width="2.5"/>
+      <line x1="15" y1="43" x2="33" y2="61" stroke="#666" stroke-width="2"/>
+      <line x1="33" y1="43" x2="15" y2="61" stroke="#666" stroke-width="2"/>
+    </g>
+    <!-- front wheel -->
+    <circle cx="56" cy="52" r="10" fill="#1a1a1a"/>
+    <g class="mow-wheel">
+      <circle cx="56" cy="52" r="5" fill="#3a3a3a"/>
+      <line x1="56" y1="42" x2="56" y2="62" stroke="#666" stroke-width="2"/>
+      <line x1="46" y1="52" x2="66" y2="52" stroke="#666" stroke-width="2"/>
+      <line x1="49" y1="45" x2="63" y2="59" stroke="#666" stroke-width="1.5"/>
+      <line x1="63" y1="45" x2="49" y2="59" stroke="#666" stroke-width="1.5"/>
+    </g>
+    <!-- stick figure person -->
+    <!-- head -->
+    <circle cx="120" cy="11" r="9" fill="#C8845A"/>
+    <!-- cap band — right edge follows head arc, rounded brim tip -->
+    <path d="M126.7 5 L101.7 5 Q100 5 100 6.75 Q100 8.5 101.7 8.5 L128.6 8.5 A9 9 0 0 0 126.7 5 Z" fill="#2c5e0e"/>
+    <!-- cap dome on top -->
+    <path d="M113.3 5 A9 9 0 0 1 126.7 5 Z" fill="#2c5e0e"/>
+    <!-- single eye with shine -->
+    <circle cx="116" cy="11" r="2.5" fill="#111"/>
+    <circle cx="117" cy="9.8" r="1" fill="#fff"/>
+    <!-- smile -->
+    <path d="M114 15.5 Q117 18 120 15.5" stroke="#4a1a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <!-- body -->
+    <line x1="119" y1="19" x2="117" y2="44" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- arms to handle -->
+    <line x1="118" y1="26" x2="90" y2="7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="116" y1="29" x2="84" y2="7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- legs -->
+    <line x1="117" y1="44" x2="110" y2="66" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="117" y1="44" x2="126" y2="66" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
   <div class="hero-inner">
     <div class="hero-pill">
       <span class="pill-dot"></span>
@@ -719,6 +804,7 @@
   </div>
   <div class="section-wave"></div>
 </section>
+</div><!-- end hero-scroll-zone -->
 
 <!-- INFO -->
 <section class="services" id="services">
@@ -813,16 +899,16 @@
       <div class="svc-card">
         <div class="svc-card-flip">
           <div class="svc-card-front">
-            <div class="svc-card-icon">🛏️</div>
-            <div class="svc-card-front-title">Moving Furniture</div>
+            <div class="svc-card-icon">✂️</div>
+            <div class="svc-card-front-title">Bush Trimming</div>
             <div class="svc-card-hint">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
               Tap to learn more
             </div>
           </div>
           <div class="svc-card-back">
-            <div class="svc-card-back-label">Moving Furniture</div>
-            <div class="svc-card-desc">Got something heavy that needs to move? Just point us to it and tell us where it goes. We'll take care of the rest.</div>
+            <div class="svc-card-back-label">Bush Trimming</div>
+            <div class="svc-card-desc">Keep your hedges and shrubs looking clean and defined. We'll shape them up neatly and haul away the clippings.</div>
             <a href="appointment.html" class="svc-card-link">Get a free quote →</a>
           </div>
         </div>
@@ -1092,7 +1178,7 @@
             <option>Weed Pulling</option>
             <option>Mulching</option>
             <option>Leaf &amp; Debris Cleanup</option>
-            <option>Moving Furniture</option>
+            <option>Bush Trimming</option>
             <option>Other</option>
           </select>
         </div>
@@ -1148,20 +1234,32 @@
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   window.scrollTo({ top: 0, behavior: 'instant' });
 
-  // Parallax grass background
+  // Scroll-driven yard reveal: Before → After left-to-right with lawnmower
   (function() {
-    const hero = document.querySelector('.hero');
+    const zone    = document.getElementById('heroScrollZone');
+    const afterBg = document.getElementById('heroAfterBg');
+    const mower   = document.getElementById('heroMower');
+    const cutLine = document.getElementById('heroCutLine');
+    if (!zone || !afterBg) return;
     let ticking = false;
-    function updateParallax() {
-      const y = window.scrollY;
-      if (y <= hero.offsetHeight * 1.2) {
-        hero.style.backgroundPositionY = `calc(50% + ${y * 0.35}px)`;
+    function update() {
+      const scrollable = zone.offsetHeight - window.innerHeight;
+      const progress = Math.max(0, Math.min(1, window.scrollY / scrollable));
+      // Reveal after-image left to right (mower faces left, flipped with scaleX(-1))
+      afterBg.style.clipPath = `inset(0 ${((1 - progress) * 100).toFixed(2)}% 0 0)`;
+      // Move mower & cut line along the leading edge (left to right)
+      const pct = (progress * 100).toFixed(2) + '%';
+      if (mower) {
+        mower.style.left = pct;
+        mower.style.opacity = (progress > 0.01 && progress < 0.99) ? '1' : '0';
       }
+      if (cutLine) cutLine.style.left = pct;
       ticking = false;
     }
     window.addEventListener('scroll', function() {
-      if (!ticking) { requestAnimationFrame(updateParallax); ticking = true; }
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
     }, { passive: true });
+    update();
   })();
 
   const observer = new IntersectionObserver((entries) => {
